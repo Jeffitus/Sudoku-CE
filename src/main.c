@@ -137,8 +137,7 @@ void game_loop(uint8_t puzzle[9][9]) {
 		if (kb_IsDown(kb_Key0)) {
 			if (puzzle[cell_x_pos][cell_y_pos] == 0) {
 				current_board[cell_x_pos][cell_y_pos] = 0;
-				gfx_SetColor(255);
-				gfx_FillRectangle_NoClip((2 + (cell_x_pos * 19) + (cell_x_pos / 3)), (2 + (cell_y_pos * 19) + (cell_y_pos / 3)), 16, 16);
+				
 			}
 		}
 		if (kb_IsDown(kb_Key1)) {
@@ -191,6 +190,9 @@ void game_loop(uint8_t puzzle[9][9]) {
 		gfx_SetColor(160);
 		gfx_Rectangle_NoClip((1 + (cell_x_pos * 19) + (cell_x_pos / 3)), (1 + (cell_y_pos * 19) + (cell_y_pos / 3)), 18, 18);
 
+		gfx_SetColor(255);
+		gfx_FillRectangle_NoClip((2 + (cell_x_pos * 19) + (cell_x_pos / 3)), (2 + (cell_y_pos * 19) + (cell_y_pos / 3)), 16, 16);
+		
 		gfx_SetTextFGColor(8);
 		for (j=0; j<9; j++) {
         	for (k=0; k<9; k++) {
