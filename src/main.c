@@ -67,8 +67,8 @@ void draw_puzzle(uint8_t puzzle[9][9]) {
     for (j=0; j<9; j++) {
         for (k=0; k<9; k++) {
         	if (puzzle[j][k] != 0) {
-            	gfx_SetTextXY(((((j * PLAYING_GRID_SIZE) / 9) + 3) + (j / 3)), ((((k * PLAYING_GRID_SIZE) / 9) + 3) + k / 3));
-            	gfx_PrintInt(puzzle[j][k], 1);
+                gfx_SetTextXY(((((j * PLAYING_GRID_SIZE) / 9) + 3) + (j / 3)), ((((k * PLAYING_GRID_SIZE) / 9) + 3) + k / 3));
+                gfx_PrintInt(puzzle[j][k], 1);
         	}	
         }
     }
@@ -100,12 +100,12 @@ void game_loop(uint8_t puzzle[9][9]) {
 
     while (!(kb_Data[6] & kb_Clear)) {
 
-		gfx_SetColor(255);
-		gfx_Rectangle_NoClip((1 + (cell_x_pos * 19) + (cell_x_pos / 3)), (1 + (cell_y_pos * 19) + (cell_y_pos / 3)), 18, 18);
+	    gfx_SetColor(255);
+	    gfx_Rectangle_NoClip((1 + (cell_x_pos * 19) + (cell_x_pos / 3)), (1 + (cell_y_pos * 19) + (cell_y_pos / 3)), 18, 18);
 
     	kb_Scan();
 
-		switch (kb_Data[7]) {
+        switch (kb_Data[7]) {
 			case kb_Down:
 				if (cell_y_pos < 8){
 					cell_y_pos++;
@@ -192,7 +192,7 @@ void game_loop(uint8_t puzzle[9][9]) {
 
 		gfx_SetColor(255);
 		gfx_FillRectangle_NoClip((2 + (cell_x_pos * 19) + (cell_x_pos / 3)), (2 + (cell_y_pos * 19) + (cell_y_pos / 3)), 16, 16);
-		
+
 		gfx_SetTextFGColor(8);
 		for (j=0; j<9; j++) {
         	for (k=0; k<9; k++) {
