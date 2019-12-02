@@ -144,53 +144,52 @@ void game_loop(uint8_t puzzle[9][9]) {
 
         if (kb_IsDown(kb_Key0)) {
             if (puzzle[cell_x_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_x_pos][cell_x_pos] = 0;
-                
+                puzzle[cell_x_pos][cell_x_pos] = 0 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key1)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 1;
+                puzzle[cell_y_pos][cell_x_pos] = 1 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key2)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 2;
+                puzzle[cell_y_pos][cell_x_pos] = 2 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key3)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 3;
+                puzzle[cell_y_pos][cell_x_pos] = 3 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key4)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 4;
+                puzzle[cell_y_pos][cell_x_pos] = 4 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key5)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 5;
+                puzzle[cell_y_pos][cell_x_pos] = 5 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key6)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 6;
+                puzzle[cell_y_pos][cell_x_pos] = 6 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key7)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 7;
+                puzzle[cell_y_pos][cell_x_pos] = 7 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key8)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 8;
+                puzzle[cell_y_pos][cell_x_pos] = 8 | FIXED_NUM;
             }
         }
         if (kb_IsDown(kb_Key9)) {
             if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 9;
+                puzzle[cell_y_pos][cell_x_pos] = 9 | FIXED_NUM;
             }
         }
 
@@ -206,7 +205,7 @@ void game_loop(uint8_t puzzle[9][9]) {
             for (j = 0; j < 9;  j++) {
                 if ((puzzle[i][j] & FIXED_NUM) && ((puzzle[i][j] & ~FIXED_NUM) != 0)) {
                     gfx_SetTextXY(((((i * PLAYING_GRID_SIZE) / 9) + 3) + (i / 3)), ((((j * PLAYING_GRID_SIZE) / 9) + 3) + j / 3));
-                    gfx_PrintInt(puzzle[i][j], 1);
+                    gfx_PrintInt(puzzle[i][j] & ~FIXED_NUM, 1);
                 }
             }
         }
