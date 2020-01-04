@@ -101,110 +101,105 @@ void game_loop(uint8_t puzzle[9][9]) {
 
     uint8_t cell_x_pos = 0;
     uint8_t cell_y_pos = 0;
-    kb_key_t key;
+    bool up, down, left, right;
+    bool prevkey;
+    kb_key_t arrows;
+    kb_key_t numpad;
+
+    int counter = 0;
 
     gfx_SetColor(160);
     gfx_Rectangle_NoClip(1, 1, 18, 18);
 
     do {
-
-        gfx_SetColor(255);
-        gfx_Rectangle_NoClip((1 + (cell_x_pos * 19) + (cell_x_pos / 3)), (1 + (cell_y_pos * 19) + (cell_y_pos / 3)), 18, 18);
+        gfx_FillScreen(255);
 
         kb_Scan();
 
-        switch (kb_Data[7]) {
-            case kb_Down:
-                if (cell_y_pos < 8) {
-                    cell_y_pos++;
-                }
-                delay(100);
-                break;
-            case kb_Left:
-                if (cell_x_pos){
-                    cell_x_pos--;
-                }
-                delay(100);
-                break;
-            case kb_Right:
-                if (cell_x_pos < 8){
-                    cell_x_pos++;
-                }
-                delay(100);
-                break;
-            case kb_Up:
-                if (cell_y_pos){
-                    cell_y_pos--;
-                }
-                delay(100);
-                break;
-            default:
-                break;
-        }
+        arrows = kb_Data[7];
 
-        if (kb_IsDown(kb_Key0)) {
-            if (puzzle[cell_x_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_x_pos][cell_x_pos] = 0 | FIXED_NUM;
+        right = arrows & kb_Right;
+        left = arrows & kb_Left;
+        up = arrows & kb_Up;
+        down = arrows & kb_Down;
+
+        numpad = kb_Data[3] ^ kb_Data[4] ^ kb_Data[5];
+
+        /* if new key or held long enough */
+        if (arrows && (!prevkey | (counter > 4))) {
+            if (right && cell_x_pos < 8) {
+                cell_x_pos++;
             }
-        }
-        if (kb_IsDown(kb_Key1)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 1 | FIXED_NUM;
+            if (left && cell_x_pos > 0) {
+                cell_x_pos--;
             }
-        }
-        if (kb_IsDown(kb_Key2)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 2 | FIXED_NUM;
+            if (up && cell_y_pos > 0) {
+                cell_y_pos--;
             }
-        }
-        if (kb_IsDown(kb_Key3)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 3 | FIXED_NUM;
-            }
-        }
-        if (kb_IsDown(kb_Key4)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 4 | FIXED_NUM;
-            }
-        }
-        if (kb_IsDown(kb_Key5)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 5 | FIXED_NUM;
-            }
-        }
-        if (kb_IsDown(kb_Key6)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 6 | FIXED_NUM;
-            }
-        }
-        if (kb_IsDown(kb_Key7)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 7 | FIXED_NUM;
-            }
-        }
-        if (kb_IsDown(kb_Key8)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 8 | FIXED_NUM;
-            }
-        }
-        if (kb_IsDown(kb_Key9)) {
-            if (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM) {
-                puzzle[cell_y_pos][cell_x_pos] = 9 | FIXED_NUM;
+            if (down && cell_y_pos < 8) {
+                cell_y_pos++;
             }
         }
 
+        if (!prevkey) {
+            counter = 0;
+        }
+        prevkey = arrows;
+
+        if (numpad && (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM)) {
+            switch (kb_Data[3]) {
+                case kb_0:
+                    puzzle[cell_y_pos][cell_x_pos] = 0 | FIXED_NUM;
+                    break;
+                case kb_1:
+                    puzzle[cell_y_pos][cell_x_pos] = 1 | FIXED_NUM;
+                    break;
+                case kb_4:
+                    puzzle[cell_y_pos][cell_x_pos] = 4 | FIXED_NUM;
+                    break;
+                case kb_7:
+                    puzzle[cell_y_pos][cell_x_pos] = 7 | FIXED_NUM;
+                    break;
+                default:
+                    break;
+            }
+            switch (kb_Data[4]) {
+                case kb_2:
+                    puzzle[cell_y_pos][cell_x_pos] = 2 | FIXED_NUM;
+                    break;
+                case kb_5:
+                    puzzle[cell_y_pos][cell_x_pos] = 5 | FIXED_NUM;
+                    break;
+                case kb_8:
+                    puzzle[cell_y_pos][cell_x_pos] = 8 | FIXED_NUM;
+                    break;
+                default:
+                    break;
+            }
+            switch (kb_Data[5]) {
+                case kb_3:
+                    puzzle[cell_y_pos][cell_x_pos] = 3 | FIXED_NUM;
+                    break;
+                case kb_6:
+                    puzzle[cell_y_pos][cell_x_pos] = 6 | FIXED_NUM;
+                    break;
+                case kb_9:
+                    puzzle[cell_y_pos][cell_x_pos] = 9 | FIXED_NUM;
+                    break;
+                default:
+                    break;
+            }
+        }
 
         gfx_SetColor(160);
         gfx_Rectangle_NoClip((1 + (cell_x_pos * 19) + (cell_x_pos / 3)), (1 + (cell_y_pos * 19) + (cell_y_pos / 3)), 18, 18);
 
-        gfx_SetColor(255);
-        gfx_FillRectangle_NoClip((2 + (cell_x_pos * 19) + (cell_x_pos / 3)), (2 + (cell_y_pos * 19) + (cell_y_pos / 3)), 16, 16);
 
         gfx_SetTextFGColor(8);
         for (i = 0; i < 9; i++) {
             for (j = 0; j < 9;  j++) {
                 if ((puzzle[i][j] & FIXED_NUM) && ((puzzle[i][j] & ~FIXED_NUM) != 0)) {
-                    gfx_SetTextXY(((((i * PLAYING_GRID_SIZE) / 9) + 3) + (i / 3)), ((((j * PLAYING_GRID_SIZE) / 9) + 3) + j / 3));
+                    gfx_SetTextXY(((((j * PLAYING_GRID_SIZE) / 9) + 3) + (j / 3)), ((((i * PLAYING_GRID_SIZE) / 9) + 3) + i / 3));
                     gfx_PrintInt(puzzle[i][j] & ~FIXED_NUM, 1);
                 }
             }
@@ -213,5 +208,7 @@ void game_loop(uint8_t puzzle[9][9]) {
         draw_puzzle(puzzle);
 
         gfx_BlitBuffer();
+
+        counter++;
     } while (!(kb_Data[6] & kb_Clear));
 }
