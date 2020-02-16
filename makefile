@@ -12,4 +12,4 @@ DESCRIPTION ?= "Sudoku CE by Jeffitus"
 
 # ----------------------------
 
-include $(CEDEV)\include\.makefile
+include $(CEDEV)/include/.makefile
