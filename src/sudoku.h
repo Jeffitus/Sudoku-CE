@@ -1,0 +1,11 @@
+void swap(int *a, int *b);
+void shuffle_array(int array[9]);
+bool solve_sudoku(uint8_t grid[9][9]);
+bool find_unassigned_cell(uint8_t grid[9][9], int *p_row, int *p_col);
+bool used_in_row(uint8_t grid[9][9], int row, int num);
+bool used_in_col(uint8_t grid[9][9], int col, int num);
+bool used_in_box(uint8_t grid[9][9], int start_row, int start_col, int num);
+bool valid_value(uint8_t grid[9][9], int row, int col, int num);
+void game_loop(uint8_t puzzle[9][9]);
+bool win_check(uint8_t puzzle[9][9]);
+void generate_puzzle(difficulty);
