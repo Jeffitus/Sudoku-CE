@@ -19,30 +19,26 @@
 extern uint8_t puzzle[9][9];
 extern uint8_t solution[9][9];
 
-int number_list[9] = {1,2,3,4,5,6,7,8,9};
+uint8_t number_list[9] = {1,2,3,4,5,6,7,8,9};
 
-void swap(int *a, int *b) {
-    int temp;
-    temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-void shuffle_array(int array[9]) {
-    int i;
-    int j;
+void shuffle_array(uint8_t array[9]) {
+    uint8_t i;
+    uint8_t j;
+    uint8_t temp;
     for (i = 8; i > 0; i--) {
         j = randInt(0, i);
-        swap(&array[i], &array[j]);
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = array[temp];
     }
     
 }
 
 bool solve_sudoku(uint8_t grid[9][9]) {
-    int row;
-    int col;
-    int i;
-    int num;
+    uint8_t row;
+    uint8_t col;
+    uint8_t i;
+    uint8_t num;
     row = 0;
     col = 0;
     if (!find_unassigned_cell(grid, &row, &col)) {
@@ -66,9 +62,9 @@ bool solve_sudoku(uint8_t grid[9][9]) {
     return false;
 }
 
-bool find_unassigned_cell(uint8_t grid[9][9], int *p_row, int *p_col) {
-    int row;
-    int col;
+bool find_unassigned_cell(uint8_t grid[9][9], uint8_t *p_row, uint8_t *p_col) {
+    uint8_t row;
+    uint8_t col;
     for (row = 0; row < 9; row++) {
         for (col = 0; col < 9; col++) {
             if (grid[row][col] == 0) {
@@ -81,8 +77,8 @@ bool find_unassigned_cell(uint8_t grid[9][9], int *p_row, int *p_col) {
     return false;
 }
 
-bool used_in_row(uint8_t grid[9][9], int row, int num) {
-    int col;
+bool used_in_row(uint8_t grid[9][9], uint8_t row, uint8_t num) {
+    uint8_t col;
     for (col = 0; col < 9; col++) {
         if (grid[row][col] == num) {
             return true;
@@ -91,8 +87,8 @@ bool used_in_row(uint8_t grid[9][9], int row, int num) {
     return false;
 }
 
-bool used_in_col(uint8_t grid[9][9], int col, int num) {
-    int row;
+bool used_in_col(uint8_t grid[9][9], uint8_t col, uint8_t num) {
+    uint8_t row;
     for (row = 0; row < 9; row++) {
         if (grid[row][col] == num) {
             return true;
@@ -101,9 +97,9 @@ bool used_in_col(uint8_t grid[9][9], int col, int num) {
     return false;
 }
 
-bool used_in_box(uint8_t grid[9][9], int start_row, int start_col, int num) {
-    int row;
-    int col;
+bool used_in_box(uint8_t grid[9][9], uint8_t start_row, uint8_t start_col, uint8_t num) {
+    uint8_t row;
+    uint8_t col;
     for (row = 0; row < 3; row++) {
         for (col = 0; col < 3; col++) {
             if (grid[row + start_row][col + start_col] == num) {
@@ -114,7 +110,7 @@ bool used_in_box(uint8_t grid[9][9], int start_row, int start_col, int num) {
     return false;
 }
 
-bool valid_value(uint8_t grid [9][9], int row, int col, int num) {
+bool valid_value(uint8_t grid [9][9], uint8_t row, uint8_t col, uint8_t num) {
     return !used_in_row(grid, row, num) && !used_in_col(grid, col, num) && !used_in_box(grid, row - row%3, col - col%3, num) && grid[row][col] == 0;
 }
 
@@ -129,7 +125,7 @@ void game_loop(uint8_t grid[9][9]) {
     kb_key_t arrows;
     kb_key_t numpad;
 
-    int counter;
+    uint8_t counter;
 
     bool puzzle_filled;
     bool win;
@@ -229,7 +225,7 @@ void game_loop(uint8_t grid[9][9]) {
 
         puzzle_filled = draw_puzzle(puzzle);
         if (puzzle_filled) {
-            win = win_check(puzzle);
+            win = win_check();
         }
 
         gfx_BlitBuffer();
@@ -238,7 +234,7 @@ void game_loop(uint8_t grid[9][9]) {
     } while (!(kb_Data[6] & kb_Clear) && !win);
 }
 
-bool win_check(uint8_t grid[9][9]) {
+bool win_check(void) {
     uint24_t result_x;
     uint24_t result_y;
     uint24_t result_x_temp;
@@ -251,6 +247,11 @@ bool win_check(uint8_t grid[9][9]) {
     uint8_t k;
     uint8_t l;
 
+    /*if using a randomly generated puzzle, it is possible that puzzle == solution - solution will be zeroed otherwise*/
+    if (puzzle == solution) {
+        return true;
+    }
+    
     result_x = 0;
     result_y = 0;
     result_x_temp = 0;
@@ -260,8 +261,8 @@ bool win_check(uint8_t grid[9][9]) {
     win = false;
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            result_y_temp |= 1 << (grid[i][j] & ~FIXED_NUM) - 1;
-            result_x_temp |= 1 << (grid[j][i] & ~FIXED_NUM) - 1;
+            result_y_temp |= 1 << (puzzle[i][j] & ~FIXED_NUM) - 1;
+            result_x_temp |= 1 << (puzzle[j][i] & ~FIXED_NUM) - 1;
         }
         if (result_y_temp == 511) {
             result_y |= 1 << i;
@@ -277,7 +278,7 @@ bool win_check(uint8_t grid[9][9]) {
             for (j = 0; j < 3; j++) {
                 for (k = 0; k < 3; k++) {
                     for (l = 0; l < 3; l++) {
-                        result_boxes_temp |= 1 << (grid[3 * i + k][3 * j + l] & ~FIXED_NUM) - 1;
+                        result_boxes_temp |= 1 << (puzzle[3 * i + k][3 * j + l] & ~FIXED_NUM) - 1;
                     }
                 }
                 if (result_boxes_temp == 511) {
@@ -292,10 +293,10 @@ bool win_check(uint8_t grid[9][9]) {
     return win;
 }
 
-void generate_puzzle(int difficulty) {
-    int i;
-    int row;
-    int col;
+void generate_puzzle(uint8_t difficulty) {
+    uint8_t i;
+    uint8_t row;
+    uint8_t col;
     solve_sudoku(solution);
     for (i = 0; i < difficulty; i++) {
         do {
