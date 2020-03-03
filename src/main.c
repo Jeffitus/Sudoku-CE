@@ -52,7 +52,10 @@ uint8_t solution[9][9] = {
 void main(void) {
     uint8_t i;
     uint8_t j;
+
     int difficulty;
+
+    srandom(rtc_Time());
 
     difficulty = EASY;
 
