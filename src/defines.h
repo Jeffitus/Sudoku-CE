@@ -6,3 +6,4 @@
 #define MEDIUM 30
 #define HARD 25
 #define VERY_HARD 20
+

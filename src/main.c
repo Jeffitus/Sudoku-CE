@@ -49,6 +49,18 @@ uint8_t solution[9][9] = {
     {0,0,0,0,0,0,0,0,0}
 };
 
+uint8_t penciled[9][9] = {
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0}
+};
+
 void main(void) {
     uint8_t i;
     uint8_t j;
@@ -71,7 +83,7 @@ void main(void) {
 
     gfx_Begin();
     gfx_SetDrawBuffer();
-    game_loop(puzzle);
+    game_loop();
     gfx_SetTextFGColor(0);
     gfx_PrintStringXY("You Win!", 1, 176);
     gfx_BlitBuffer();

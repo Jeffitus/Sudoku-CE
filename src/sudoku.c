@@ -18,6 +18,7 @@
 
 extern uint8_t puzzle[9][9];
 extern uint8_t solution[9][9];
+extern uint8_t penciled[9][9];
 
 uint8_t number_list[9] = {1,2,3,4,5,6,7,8,9};
 
@@ -114,16 +115,18 @@ bool valid_value(uint8_t grid [9][9], uint8_t row, uint8_t col, uint8_t num) {
     return !used_in_row(grid, row, num) && !used_in_col(grid, col, num) && !used_in_box(grid, row - row%3, col - col%3, num) && grid[row][col] == 0;
 }
 
-void game_loop(uint8_t grid[9][9]) {
+void game_loop(void) {
     uint8_t i;
     uint8_t j;
 
     uint8_t cell_x_pos;
     uint8_t cell_y_pos;
+    bool pencil;
     bool up, down, left, right;
     bool prevkey;
     kb_key_t arrows;
     kb_key_t numpad;
+    uint8_t num;
 
     uint8_t counter;
 
@@ -132,8 +135,11 @@ void game_loop(uint8_t grid[9][9]) {
 
     cell_x_pos = 0;
     cell_y_pos = 0;
+    pencil = false;
     counter = 0;
     prevkey = false;
+
+    num = 0;
 
     win = false;
 
@@ -178,46 +184,57 @@ void game_loop(uint8_t grid[9][9]) {
         if (numpad && (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM)) {
             switch (kb_Data[3]) {
                 case kb_0:
-                    puzzle[cell_y_pos][cell_x_pos] = 0 | FIXED_NUM;
+                    num = 0;
                     break;
                 case kb_1:
-                    puzzle[cell_y_pos][cell_x_pos] = 1 | FIXED_NUM;
+                    num = 1;
                     break;
                 case kb_4:
-                    puzzle[cell_y_pos][cell_x_pos] = 4 | FIXED_NUM;
+                    num = 4;
                     break;
                 case kb_7:
-                    puzzle[cell_y_pos][cell_x_pos] = 7 | FIXED_NUM;
+                    num = 7;
                     break;
                 default:
                     break;
             }
             switch (kb_Data[4]) {
                 case kb_2:
-                    puzzle[cell_y_pos][cell_x_pos] = 2 | FIXED_NUM;
+                    num = 2;
                     break;
                 case kb_5:
-                    puzzle[cell_y_pos][cell_x_pos] = 5 | FIXED_NUM;
+                    num = 5;
                     break;
                 case kb_8:
-                    puzzle[cell_y_pos][cell_x_pos] = 8 | FIXED_NUM;
+                    num = 8;
                     break;
                 default:
                     break;
             }
             switch (kb_Data[5]) {
                 case kb_3:
-                    puzzle[cell_y_pos][cell_x_pos] = 3 | FIXED_NUM;
-                    break;
+                    num = 3;
                 case kb_6:
-                    puzzle[cell_y_pos][cell_x_pos] = 6 | FIXED_NUM;
+                    num = 6;
                     break;
                 case kb_9:
-                    puzzle[cell_y_pos][cell_x_pos] = 9 | FIXED_NUM;
+                    num = 9;
                     break;
                 default:
                     break;
             }
+            if (pencil) {
+                if (num != 0) {
+                    penciled[cell_y_pos][cell_x_pos] |= 1 << (num - 1);
+                }
+            } else {
+                puzzle[cell_y_pos][cell_x_pos] = num | FIXED_NUM;
+            }
+        }
+
+        /*toggle pencil mode*/
+        if (kb_Data[1] & kb_2nd) {
+            pencil = !pencil;
         }
 
         gfx_SetColor(160);
