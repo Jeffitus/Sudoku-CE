@@ -19,8 +19,8 @@ void draw_three_boxes(uint8_t pos) {
     uint8_t i;
     uint8_t cell_size = (PLAYING_GRID_SIZE - 1) / 9;
     for (i = 0; i < 4; i++) {
-        gfx_VertLine_NoClip((i * cell_size + (PLAYING_GRID_SIZE - 1) / 3 * pos + pos), 0, PLAYING_GRID_SIZE + 2);
-        gfx_HorizLine_NoClip(0, (i * (PLAYING_GRID_SIZE - 1) / 9 + (PLAYING_GRID_SIZE - 1) / 3 * pos + pos), PLAYING_GRID_SIZE + 2);
+        gfx_VertLine_NoClip((i * cell_size + (PLAYING_GRID_SIZE - 1) / 3 * pos + pos) + PUZZLE_X, PUZZLE_Y, PLAYING_GRID_SIZE + 2);
+        gfx_HorizLine_NoClip(PUZZLE_X, (i * (PLAYING_GRID_SIZE - 1) / 9 + (PLAYING_GRID_SIZE - 1) / 3 * pos + pos) + PUZZLE_Y, PLAYING_GRID_SIZE + 2);
     }
 }
 
@@ -43,7 +43,7 @@ bool draw_puzzle(uint8_t puzzle[9][9]) {
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            gfx_SetTextXY(j * PLAYING_GRID_SIZE / 9 + 3 + j / 3, i * PLAYING_GRID_SIZE / 9 + 3 + i / 3);
+            gfx_SetTextXY(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + 6 + PUZZLE_Y);
             if (!(puzzle[i][j] & FIXED_NUM)) {
                 gfx_SetTextFGColor(74);
                 gfx_PrintInt(puzzle[i][j], 1);

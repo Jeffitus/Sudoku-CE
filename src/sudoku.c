@@ -143,9 +143,6 @@ void game_loop(void) {
 
     win = false;
 
-    gfx_SetColor(160);
-    gfx_Rectangle_NoClip(1, 1, 18, 18);
-
     do {
         gfx_FillScreen(255);
 
@@ -238,7 +235,7 @@ void game_loop(void) {
         }
 
         gfx_SetColor(160);
-        gfx_Rectangle_NoClip(1 + cell_x_pos * 19 + cell_x_pos / 3, 1 + cell_y_pos * 19 + cell_y_pos / 3, 18, 18);
+        gfx_Rectangle_NoClip(cell_x_pos * (CELL_SIZE + 1) + cell_x_pos / 3 + 1 + PUZZLE_X, cell_y_pos * (CELL_SIZE + 1) + cell_y_pos / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
 
         puzzle_filled = draw_puzzle(puzzle);
         if (puzzle_filled) {

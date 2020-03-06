@@ -85,9 +85,6 @@ void main(void) {
     gfx_SetDrawBuffer();
     game_loop();
     gfx_SetTextFGColor(0);
-    gfx_PrintStringXY("You Win!", 1, 176);
-    gfx_BlitBuffer();
-    while (!os_GetCSC());
     gfx_End();
 }
 
