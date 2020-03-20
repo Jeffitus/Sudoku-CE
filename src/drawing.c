@@ -44,18 +44,18 @@ bool draw_puzzle(void) {
     puzzle_filled = true;
 
     gfx_SetTextScale(2, 2);
-    gfx_SetTextFGColor(74);
+    gfx_SetTextFGColor(GRAY);
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
             gfx_SetTextScale(2, 2);
             gfx_SetTextXY(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + 6 + PUZZLE_Y);
             if (!(puzzle[i][j] & UNDEFINED)) {
-                gfx_SetTextFGColor(74);
+                gfx_SetTextFGColor(GRAY);
                 gfx_PrintUInt(puzzle[i][j], 1);
             }
             if (puzzle[i][j] & UNDEFINED && ((puzzle[i][j] & VALUE) != 0)) {
-                gfx_SetTextFGColor(8);
+                gfx_SetTextFGColor(BLUE);
                 gfx_PrintUInt(puzzle[i][j] & VALUE, 1);
             }
             if (puzzle[i][j] == 128) {
@@ -71,6 +71,7 @@ void draw_pencils(uint8_t row, uint8_t col) {
     uint8_t i;
     uint8_t j;
     gfx_SetTextScale(1, 1);
+    gfx_SetTextFGColor(BLUE);
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             if (puzzle[row][col] & PENCIL_MARK(3 * i + j + 1)) {

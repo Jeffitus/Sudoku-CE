@@ -21,15 +21,20 @@ extern uint8_t solution[9][9];
 
 uint8_t number_list[9] = {1,2,3,4,5,6,7,8,9};
 
+void swap(uint8_t *a, uint8_t *b) {
+    uint8_t temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
 void shuffle_array(uint8_t array[9]) {
     uint8_t i;
     uint8_t j;
     uint8_t temp;
     for (i = 8; i > 0; i--) {
         j = randInt(0, i);
-        temp = array[i];
-        array[i] = array[j];
-        array[j] = array[temp];
+        swap(&array[i], &array[j]);
     }
     
 }
@@ -226,7 +231,7 @@ void game_loop(void) {
             }
             if (pencil) {
                 if (num != 0) {
-                    puzzle[selected_row][selected_col] |= PENCIL_MARK(num);
+                    puzzle[selected_row][selected_col] ^= PENCIL_MARK(num);
                 }
             } else {
                 puzzle[selected_row][selected_col] = puzzle[selected_row][selected_col] & ~VALUE | num;
@@ -243,7 +248,9 @@ void game_loop(void) {
         gfx_FillRectangle_NoClip(prev_col * (CELL_SIZE + 1) + prev_col / 3 + 1 + PUZZLE_X, prev_row * (CELL_SIZE + 1) + prev_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
         gfx_SetColor(160);
         gfx_Rectangle_NoClip(selected_col * (CELL_SIZE + 1) + selected_col / 3 + 1 + PUZZLE_X, selected_row * (CELL_SIZE + 1) + selected_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
-        draw_pencils(prev_row, prev_col);
+        if (!(puzzle[prev_row][prev_col] & VALUE)) {
+            draw_pencils(prev_row, prev_col);
+        }
         puzzle_filled = draw_puzzle();
         
         if (puzzle_filled) {
