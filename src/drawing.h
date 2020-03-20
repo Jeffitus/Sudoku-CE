@@ -1,2 +1,4 @@
 void draw_three_boxes(uint8_t pos);
-bool draw_puzzle(uint8_t puzzle[9][9]);
+void draw_grid(void);
+bool draw_puzzle(void);
+void draw_pencils(uint8_t row, uint8_t col);

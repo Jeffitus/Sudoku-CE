@@ -16,9 +16,8 @@
 #include "sudoku.h"
 #include "drawing.h"
 
-extern uint8_t puzzle[9][9];
+extern uint24_t puzzle[9][9];
 extern uint8_t solution[9][9];
-extern uint8_t penciled[9][9];
 
 uint8_t number_list[9] = {1,2,3,4,5,6,7,8,9};
 
@@ -119,8 +118,10 @@ void game_loop(void) {
     uint8_t i;
     uint8_t j;
 
-    uint8_t cell_x_pos;
-    uint8_t cell_y_pos;
+    uint8_t selected_row;
+    uint8_t selected_col;
+    uint8_t prev_row;
+    uint8_t prev_col;
     bool pencil;
     bool up, down, left, right;
     bool prevkey;
@@ -133,8 +134,10 @@ void game_loop(void) {
     bool puzzle_filled;
     bool win;
 
-    cell_x_pos = 0;
-    cell_y_pos = 0;
+    selected_col = 0;
+    selected_row = 0;
+    prev_col = 0;
+    prev_row = 0;
     pencil = false;
     counter = 0;
     prevkey = false;
@@ -143,9 +146,9 @@ void game_loop(void) {
 
     win = false;
 
-    do {
-        gfx_FillScreen(255);
+    draw_grid();
 
+    do {
         kb_Scan();
 
         arrows = kb_Data[7];
@@ -159,17 +162,17 @@ void game_loop(void) {
 
         /* if new key or held long enough */
         if (arrows && !prevkey | counter > 4) {
-            if (right && cell_x_pos < 8) {
-                cell_x_pos++;
+            if (right && selected_col < 8) {
+                selected_col++;
             }
-            if (left && cell_x_pos > 0) {
-                cell_x_pos--;
+            if (left && selected_col > 0) {
+                selected_col--;
             }
-            if (up && cell_y_pos > 0) {
-                cell_y_pos--;
+            if (up && selected_row > 0) {
+                selected_row--;
             }
-            if (down && cell_y_pos < 8) {
-                cell_y_pos++;
+            if (down && selected_row < 8) {
+                selected_row++;
             }
         }
 
@@ -178,7 +181,7 @@ void game_loop(void) {
         }
         prevkey = arrows;
 
-        if (numpad && (puzzle[cell_y_pos][cell_x_pos] & FIXED_NUM)) {
+        if (numpad && (puzzle[selected_row][selected_col] & UNDEFINED)) {
             switch (kb_Data[3]) {
                 case kb_0:
                     num = 0;
@@ -211,6 +214,7 @@ void game_loop(void) {
             switch (kb_Data[5]) {
                 case kb_3:
                     num = 3;
+                    break;
                 case kb_6:
                     num = 6;
                     break;
@@ -222,10 +226,11 @@ void game_loop(void) {
             }
             if (pencil) {
                 if (num != 0) {
-                    penciled[cell_y_pos][cell_x_pos] |= 1 << (num - 1);
+                    puzzle[selected_row][selected_col] |= PENCIL_MARK(num);
                 }
             } else {
-                puzzle[cell_y_pos][cell_x_pos] = num | FIXED_NUM;
+                puzzle[selected_row][selected_col] = puzzle[selected_row][selected_col] & ~VALUE | num;
+                dbg_sprintf(dbgout, "%d\n", puzzle[selected_row][selected_col] & VALUE);
             }
         }
 
@@ -234,10 +239,13 @@ void game_loop(void) {
             pencil = !pencil;
         }
 
+        gfx_SetColor(255);
+        gfx_FillRectangle_NoClip(prev_col * (CELL_SIZE + 1) + prev_col / 3 + 1 + PUZZLE_X, prev_row * (CELL_SIZE + 1) + prev_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
         gfx_SetColor(160);
-        gfx_Rectangle_NoClip(cell_x_pos * (CELL_SIZE + 1) + cell_x_pos / 3 + 1 + PUZZLE_X, cell_y_pos * (CELL_SIZE + 1) + cell_y_pos / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
-
-        puzzle_filled = draw_puzzle(puzzle);
+        gfx_Rectangle_NoClip(selected_col * (CELL_SIZE + 1) + selected_col / 3 + 1 + PUZZLE_X, selected_row * (CELL_SIZE + 1) + selected_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
+        draw_pencils(prev_row, prev_col);
+        puzzle_filled = draw_puzzle();
+        
         if (puzzle_filled) {
             win = win_check();
         }
@@ -245,6 +253,9 @@ void game_loop(void) {
         gfx_BlitBuffer();
 
         counter++;
+
+        prev_row = selected_row;
+        prev_col = selected_col;
     } while (!(kb_Data[6] & kb_Clear) && !win);
 }
 
@@ -261,11 +272,6 @@ bool win_check(void) {
     uint8_t k;
     uint8_t l;
 
-    /*if using a randomly generated puzzle, it is possible that puzzle == solution - solution will be zeroed otherwise*/
-    if (puzzle == solution) {
-        return true;
-    }
-    
     result_x = 0;
     result_y = 0;
     result_x_temp = 0;
@@ -275,8 +281,8 @@ bool win_check(void) {
     win = false;
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            result_y_temp |= 1 << (puzzle[i][j] & ~FIXED_NUM) - 1;
-            result_x_temp |= 1 << (puzzle[j][i] & ~FIXED_NUM) - 1;
+            result_y_temp |= 1 << (puzzle[i][j] & VALUE) - 1;
+            result_x_temp |= 1 << (puzzle[j][i] & VALUE) - 1;
         }
         if (result_y_temp == 511) {
             result_y |= 1 << i;
@@ -292,7 +298,7 @@ bool win_check(void) {
             for (j = 0; j < 3; j++) {
                 for (k = 0; k < 3; k++) {
                     for (l = 0; l < 3; l++) {
-                        result_boxes_temp |= 1 << (puzzle[3 * i + k][3 * j + l] & ~FIXED_NUM) - 1;
+                        result_boxes_temp |= 1 << (puzzle[3 * i + k][3 * j + l] & VALUE) - 1;
                     }
                 }
                 if (result_boxes_temp == 511) {
