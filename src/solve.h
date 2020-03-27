@@ -5,6 +5,3 @@ bool used_in_row(uint8_t grid[9][9], uint8_t row, uint8_t num);
 bool used_in_col(uint8_t grid[9][9], uint8_t col, uint8_t num);
 bool used_in_box(uint8_t grid[9][9], uint8_t start_row, uint8_t start_col, uint8_t num);
 bool valid_value(uint8_t grid[9][9], uint8_t row, uint8_t col, uint8_t num);
-void game_loop(void);
-bool win_check(void);
-void generate_puzzle(uint8_t difficulty);

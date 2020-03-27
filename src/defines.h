@@ -19,3 +19,5 @@
 #define BLUE 0
 #define BLACK 1
 #define WHITE 2
+
+#define ONE_SECOND 32768

@@ -24,10 +24,9 @@
 
 #include "defines.h"
 #include "drawing.h"
-#include "sudoku.h"
-
+#include "game.h"
+#include "solve.h"
 #include "gfx/gfx.h"
-
 #include "font/myfonts.h"
 
 /*

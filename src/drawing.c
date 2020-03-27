@@ -15,6 +15,10 @@
 
 #include "defines.h"
 #include "drawing.h"
+#include "game.h"
+#include "solve.h"
+#include "gfx/gfx.h"
+#include "font/myfonts.h"
 
 extern uint24_t puzzle[9][9];
 extern uint8_t solution[9][9];
@@ -77,4 +81,25 @@ void draw_pencils(uint8_t row, uint8_t col) {
             }
         }
     }
+}
+
+void draw_timer(uint24_t timer_count) {
+    uint24_t hours;
+    uint8_t minutes;
+    uint8_t seconds;
+
+    hours = floor(timer_count / 60 / 60);
+
+    minutes = floor(timer_count / 60) - hours * 60;
+
+    seconds = timer_count % 60;
+
+    fontlib_SetCursorPosition(240, 2);
+    fontlib_DrawUInt(hours, 2);
+    fontlib_DrawString(":");
+    fontlib_SetCursorPosition(240, 20);
+    fontlib_DrawUInt(minutes, 2);
+    fontlib_DrawString(":");
+    fontlib_SetCursorPosition(240, 38);
+    fontlib_DrawUInt(seconds, 2);
 }
