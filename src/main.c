@@ -18,12 +18,17 @@
 #include <string.h>
 
 #include <graphx.h>
+#include <fontlibc.h>
 #include <keypadc.h>
 #include <debug.h>
 
 #include "defines.h"
 #include "drawing.h"
 #include "sudoku.h"
+
+#include "gfx/gfx.h"
+
+#include "font/myfonts.h"
 
 /*
 for each element of puzzle array:
@@ -76,7 +81,6 @@ void main(void) {
     srandom(rtc_Time());
 
     difficulty = EASY;
-    dbg_sprintf(dbgout, "check0\n");
     generate_puzzle(difficulty);
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
@@ -87,9 +91,10 @@ void main(void) {
     }
 
     gfx_Begin();
+    gfx_SetPalette(sudoku_palette, sizeof_sudoku_palette, 0);
+    fontlib_SetFont(calvetica, 0);
     gfx_SetDrawBuffer();
     game_loop();
-    gfx_SetTextFGColor(0);
     gfx_End();
 }
 

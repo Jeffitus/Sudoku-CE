@@ -16,5 +16,6 @@
 #define HARD 25
 #define VERY_HARD 20
 
-#define BLUE 17
-#define GRAY 74
+#define BLUE 0
+#define BLACK 1
+#define WHITE 2

@@ -13,3 +13,8 @@ DESCRIPTION ?= "Sudoku CE by Jeffitus"
 # ----------------------------
 
 include $(CEDEV)/include/.makefile
+
+$(OBJDIR)/myfonts.src: $(SRCDIR)/font/calvetica.inc
+
+$(SRCDIR)/font/calvetica.inc: $(SRCDIR)/font/HELVE29.fnt
+	convfont -o carray -f $(SRCDIR)/font/HELVE29.fnt $(SRCDIR)/font/calvetica.inc

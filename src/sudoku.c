@@ -9,12 +9,15 @@
 #include <string.h>
 
 #include <graphx.h>
+#include <fontlibc.h>
 #include <keypadc.h>
 #include <debug.h>
 
 #include "defines.h"
 #include "sudoku.h"
 #include "drawing.h"
+
+#include "gfx/gfx.h"
 
 extern uint24_t puzzle[9][9];
 extern uint8_t solution[9][9];
@@ -127,7 +130,7 @@ void game_loop(void) {
     uint8_t selected_col;
     uint8_t prev_row;
     uint8_t prev_col;
-    bool pencil;
+    bool pencil_mode;
     bool up, down, left, right;
     bool prevkey;
     kb_key_t arrows;
@@ -143,7 +146,7 @@ void game_loop(void) {
     selected_row = 0;
     prev_col = 0;
     prev_row = 0;
-    pencil = false;
+    pencil_mode = false;
     counter = 0;
     prevkey = false;
 
@@ -229,7 +232,7 @@ void game_loop(void) {
                 default:
                     break;
             }
-            if (pencil) {
+            if (pencil_mode) {
                 if (num != 0) {
                     puzzle[selected_row][selected_col] ^= PENCIL_MARK(num);
                 }
@@ -241,12 +244,18 @@ void game_loop(void) {
 
         /*toggle pencil mode*/
         if (kb_Data[1] & kb_2nd) {
-            pencil = !pencil;
+            pencil_mode = !pencil_mode;
         }
 
-        gfx_SetColor(255);
+        if (pencil_mode) {
+            gfx_Sprite_NoClip(pencil_selected, 283, 203);
+        } else {
+            gfx_Sprite_NoClip(pencil, 283, 203);
+        }
+
+        gfx_SetColor(WHITE);
         gfx_FillRectangle_NoClip(prev_col * (CELL_SIZE + 1) + prev_col / 3 + 1 + PUZZLE_X, prev_row * (CELL_SIZE + 1) + prev_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
-        gfx_SetColor(160);
+        gfx_SetColor(BLUE);
         gfx_Rectangle_NoClip(selected_col * (CELL_SIZE + 1) + selected_col / 3 + 1 + PUZZLE_X, selected_row * (CELL_SIZE + 1) + selected_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
         if (!(puzzle[prev_row][prev_col] & VALUE)) {
             draw_pencils(prev_row, prev_col);

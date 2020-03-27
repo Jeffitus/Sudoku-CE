@@ -1,0 +1,15 @@
+output: c
+  include-file: gfx.h
+  palettes:
+    - sudoku_palette
+  converts:
+    - sprites
+
+palette: sudoku_palette
+  images: automatic
+
+convert: sprites
+  palette: sudoku_palette
+  images:
+    - pencil.png
+    - pencil_selected.png
