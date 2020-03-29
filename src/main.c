@@ -24,6 +24,7 @@
 
 #include "defines.h"
 #include "drawing.h"
+#include "menu.h"
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
@@ -80,20 +81,21 @@ void main(void) {
     srandom(rtc_Time());
 
     difficulty = EASY;
-    generate_puzzle(difficulty);
+    /*generate_puzzle(difficulty);
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
             if (puzzle[i][j] == 0) {
                 puzzle[i][j] |= UNDEFINED;
             }
         }
-    }
+    }*/
 
     gfx_Begin();
     gfx_SetPalette(sudoku_palette, sizeof_sudoku_palette, 0);
     fontlib_SetFont(calvetica, 0);
     gfx_SetDrawBuffer();
-    game_loop();
+    /*game_loop();*/
+    menu_loop();
     gfx_End();
 }
 

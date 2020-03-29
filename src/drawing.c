@@ -15,6 +15,7 @@
 
 #include "defines.h"
 #include "drawing.h"
+#include "menu.h"
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
@@ -102,4 +103,17 @@ void draw_timer(uint24_t timer_count) {
     fontlib_DrawString(":");
     fontlib_SetCursorPosition(240, 38);
     fontlib_DrawUInt(seconds, 2);
+}
+
+void draw_string_special(char string[]) {
+    int i;
+    for (i = 0; i <= strlen(string); i++) {
+        if (string[i] == 'y') {
+            fontlib_ShiftCursorPosition(0, 5);
+            fontlib_DrawGlyph('y');
+            fontlib_ShiftCursorPosition(0, -5);
+        } else {
+            fontlib_DrawGlyph(string[i]);
+        }
+    }
 }

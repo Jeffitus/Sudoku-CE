@@ -15,6 +15,7 @@
 
 #include "defines.h"
 #include "drawing.h"
+#include "menu.h"
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"

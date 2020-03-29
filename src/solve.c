@@ -14,9 +14,10 @@
 #include <debug.h>
 
 #include "defines.h"
+#include "drawing.h"
+#include "menu.h"
 #include "game.h"
 #include "solve.h"
-#include "drawing.h"
 #include "gfx/gfx.h"
 #include "font/myfonts.h"
 
