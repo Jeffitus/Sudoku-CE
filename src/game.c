@@ -21,9 +21,6 @@
 #include "gfx/gfx.h"
 #include "font/myfonts.h"
 
-extern uint24_t puzzle[9][9];
-extern uint8_t solution[9][9];
-
 void game_loop(void) {
     uint8_t i;
     uint8_t j;
@@ -45,6 +42,14 @@ void game_loop(void) {
 
     bool puzzle_filled;
     bool win;
+    bool quit;
+
+    char pause_menu_title[] = "Paused";
+    char *pause_menu_options[] = {
+        "Resume",
+        "Give up",
+        "Quit"
+    };
 
     selected_col = 0;
     selected_row = 0;
@@ -58,12 +63,50 @@ void game_loop(void) {
     num = 0;
 
     win = false;
+    quit = false;
+
+    fontlib_SetForegroundColor(BLACK);
 
     draw_grid();
-
     setup_timer();
 
     do {
+
+        if (pencil_mode) {
+            gfx_SetColor(BLUE);
+            gfx_HorizLine_NoClip(288, 204, 26);
+            gfx_HorizLine_NoClip(288, 237, 26);
+            gfx_VertLine_NoClip(284, 208, 26);
+            gfx_VertLine_NoClip(317, 208, 26);
+            gfx_FillRectangle_NoClip(285, 205, 32, 32);
+        } else {
+            gfx_SetColor(WHITE);
+            gfx_FillRectangle_NoClip(283, 203, 36, 36);
+        }
+        gfx_TransparentSprite_NoClip(pencil, 283, 203);
+
+        gfx_SetColor(WHITE);
+        gfx_FillRectangle_NoClip(prev_col * (CELL_SIZE + 1) + prev_col / 3 + 1 + PUZZLE_X, prev_row * (CELL_SIZE + 1) + prev_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
+        gfx_SetColor(BLUE);
+        gfx_Rectangle_NoClip(selected_col * (CELL_SIZE + 1) + selected_col / 3 + 1 + PUZZLE_X, selected_row * (CELL_SIZE + 1) + selected_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
+        if (!(puzzle[prev_row][prev_col] & VALUE)) {
+            draw_pencils(prev_row, prev_col);
+        }
+        puzzle_filled = draw_puzzle();
+
+        prev_row = selected_row;
+        prev_col = selected_col;
+
+        if (timer_IntStatus & TIMER1_RELOADED) {
+            timer_count++;
+            draw_timer(timer_count);
+            timer_IntAcknowledge = TIMER1_RELOADED;
+        }
+        
+        if (puzzle_filled) {
+            win = win_check();
+        }
+
         kb_Scan();
 
         arrows = kb_Data[7];
@@ -91,12 +134,7 @@ void game_loop(void) {
             }
         }
 
-        if (!prevkey) {
-            counter = 0;
-        }
-        prevkey = arrows;
-
-        if (numpad && (puzzle[selected_row][selected_col] & UNDEFINED)) {
+        if (numpad && (puzzle[selected_row][selected_col] & UNDEFINED) && !prevkey) {
             switch (kb_Data[3]) {
                 case kb_0:
                     num = 0;
@@ -150,42 +188,49 @@ void game_loop(void) {
         }
 
         /*toggle pencil mode*/
-        if (kb_Data[1] & kb_2nd) {
+        if (kb_Data[1] & kb_Graph && !prevkey) {
             pencil_mode = !pencil_mode;
         }
 
-        if (pencil_mode) {
-            gfx_Sprite_NoClip(pencil_selected, 283, 203);
-        } else {
-            gfx_Sprite_NoClip(pencil, 283, 203);
+        if (kb_Data[6] & kb_Clear && !prevkey) {
+            /* To avoid exploiting the timer by holding down [clear] */
+            gfx_FillScreen(WHITE);
+            gfx_BlitBuffer();
+            wait_for_key_release();
+            switch (basic_menu(pause_menu_title, pause_menu_options, 2)) {
+                case 0:
+                    draw_grid();
+                    break;
+                case 1:
+                    reveal_solution();
+                    quit = true;
+                    break;
+                case 2:
+                    quit = true;
+                    break;
+            }
         }
 
-        gfx_SetColor(WHITE);
-        gfx_FillRectangle_NoClip(prev_col * (CELL_SIZE + 1) + prev_col / 3 + 1 + PUZZLE_X, prev_row * (CELL_SIZE + 1) + prev_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
-        gfx_SetColor(BLUE);
-        gfx_Rectangle_NoClip(selected_col * (CELL_SIZE + 1) + selected_col / 3 + 1 + PUZZLE_X, selected_row * (CELL_SIZE + 1) + selected_row / 3 + 1 + PUZZLE_Y, CELL_SIZE, CELL_SIZE);
-        if (!(puzzle[prev_row][prev_col] & VALUE)) {
-            draw_pencils(prev_row, prev_col);
+        if (!prevkey) {
+            counter = 0;
         }
-        puzzle_filled = draw_puzzle();
-        
-        if (puzzle_filled) {
-            win = win_check();
-        }
-
-        gfx_BlitBuffer();
+        prevkey = arrows | numpad | kb_Data[1] & kb_Graph | kb_Data[6] & kb_Clear;
 
         counter++;
 
-        if (timer_IntStatus & TIMER1_RELOADED) {
-            timer_count++;
-            draw_timer(timer_count);
-            timer_IntAcknowledge = TIMER1_RELOADED;
-        }
-
-        prev_row = selected_row;
-        prev_col = selected_col;
-    } while (!(kb_Data[6] & kb_Clear) && !win);
+        gfx_BlitBuffer();
+    } while (!quit && !win);
+    if (win) {
+        fontlib_SetForegroundColor(BLACK);
+        fontlib_SetCursorPosition(255, 101);
+        draw_string("You");
+        fontlib_SetCursorPosition(254, 119);
+        draw_string("Win!");
+        gfx_BlitBuffer();
+        wait_for_key_release();
+        wait_for_key_press();
+        wait_for_key_release();
+    }
 }
 
 bool win_check(void) {
@@ -244,15 +289,31 @@ bool win_check(void) {
 
 void generate_puzzle(uint8_t difficulty) {
     uint8_t i;
+    uint8_t j;
     uint8_t row;
     uint8_t col;
-    solve_sudoku(solution);
+    solve_sudoku();
+
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 9; j++) {
+            puzzle[i][j] <<= 4;
+        }
+    }
+
     for (i = 0; i < difficulty; i++) {
         do {
             row = randInt(0,8);
             col = randInt(0,8);
-        } while (puzzle[row][col] != 0);
-        puzzle[row][col] = solution[row][col];
+        } while ((puzzle[row][col] & VALUE) != 0);
+        puzzle[row][col] |= SOLUTION(puzzle[row][col]);
+    }
+
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 9; j++) {
+            if ((puzzle[i][j] & VALUE) == 0) {
+                puzzle[i][j] |= UNDEFINED;
+            }
+        }
     }
 }
 
@@ -264,4 +325,20 @@ void setup_timer(void) {
     timer_1_ReloadValue = timer_1_Counter = ONE_SECOND;
 
     timer_Control = TIMER1_ENABLE | TIMER1_32K | TIMER1_0INT | TIMER1_DOWN;
+}
+
+void reveal_solution(void) {
+    uint8_t i;
+    uint8_t j;
+
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 9; j++) {
+            puzzle[i][j] |= SOLUTION(puzzle[i][j] & SOLUTION_DATA);
+        }
+    }
+
+    draw_grid();
+    draw_puzzle();
+    wait_for_key_press();
+    wait_for_key_release();
 }

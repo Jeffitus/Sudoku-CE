@@ -6,10 +6,10 @@ output: c
     - sprites
 
 palette: sudoku_palette
-  images: automatic
+  images:
+    - pencil_selected.png
 
 convert: sprites
   palette: sudoku_palette
   images:
     - pencil.png
-    - pencil_selected.png

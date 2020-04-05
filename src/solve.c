@@ -21,7 +21,6 @@
 #include "gfx/gfx.h"
 #include "font/myfonts.h"
 
-
 void swap(uint8_t *a, uint8_t *b) {
     uint8_t temp;
     temp = *a;
@@ -39,7 +38,7 @@ void shuffle_array(uint8_t array[9]) {
     
 }
 
-bool solve_sudoku(uint8_t grid[9][9]) {
+bool solve_sudoku(void) {
     uint8_t row;
     uint8_t col;
     uint8_t i;
@@ -47,7 +46,7 @@ bool solve_sudoku(uint8_t grid[9][9]) {
     uint8_t number_list[9] = {1,2,3,4,5,6,7,8,9};
     row = 0;
     col = 0;
-    if (!find_unassigned_cell(grid, &row, &col)) {
+    if (!find_unassigned_cell(&row, &col)) {
         return true;
     }
 
@@ -55,25 +54,25 @@ bool solve_sudoku(uint8_t grid[9][9]) {
 
     for (i = 0; i < 8; i++) {
         num = number_list[i];
-        if (valid_value(grid, row, col, num)) {
-            grid[row][col] = num;
+        if (valid_value(row, col, num)) {
+            puzzle[row][col] = num;
 
-            if (solve_sudoku(grid)) {
+            if (solve_sudoku()) {
                 return true;
             }
 
-            grid [row][col] = 0;
+            puzzle [row][col] = 0;
         }
     }
     return false;
 }
 
-bool find_unassigned_cell(uint8_t grid[9][9], uint8_t *p_row, uint8_t *p_col) {
+bool find_unassigned_cell(uint8_t *p_row, uint8_t *p_col) {
     uint8_t row;
     uint8_t col;
     for (row = 0; row < 9; row++) {
         for (col = 0; col < 9; col++) {
-            if (grid[row][col] == 0) {
+            if (puzzle[row][col] == 0) {
                 *p_row = row;
                 *p_col = col;
                 return true;
@@ -83,32 +82,32 @@ bool find_unassigned_cell(uint8_t grid[9][9], uint8_t *p_row, uint8_t *p_col) {
     return false;
 }
 
-bool used_in_row(uint8_t grid[9][9], uint8_t row, uint8_t num) {
+bool used_in_row(uint8_t row, uint8_t num) {
     uint8_t col;
     for (col = 0; col < 9; col++) {
-        if (grid[row][col] == num) {
+        if (puzzle[row][col] == num) {
             return true;
         }
     }
     return false;
 }
 
-bool used_in_col(uint8_t grid[9][9], uint8_t col, uint8_t num) {
+bool used_in_col(uint8_t col, uint8_t num) {
     uint8_t row;
     for (row = 0; row < 9; row++) {
-        if (grid[row][col] == num) {
+        if (puzzle[row][col] == num) {
             return true;
         }
     }
     return false;
 }
 
-bool used_in_box(uint8_t grid[9][9], uint8_t start_row, uint8_t start_col, uint8_t num) {
+bool used_in_box(uint8_t start_row, uint8_t start_col, uint8_t num) {
     uint8_t row;
     uint8_t col;
     for (row = 0; row < 3; row++) {
         for (col = 0; col < 3; col++) {
-            if (grid[row + start_row][col + start_col] == num) {
+            if (puzzle[row + start_row][col + start_col] == num) {
                 return true;
             }
         }
@@ -116,6 +115,6 @@ bool used_in_box(uint8_t grid[9][9], uint8_t start_row, uint8_t start_col, uint8
     return false;
 }
 
-bool valid_value(uint8_t grid [9][9], uint8_t row, uint8_t col, uint8_t num) {
-    return !used_in_row(grid, row, num) && !used_in_col(grid, col, num) && !used_in_box(grid, row - row%3, col - col%3, num) && grid[row][col] == 0;
+bool valid_value(uint8_t row, uint8_t col, uint8_t num) {
+    return !used_in_row(row, num) && !used_in_col(col, num) && !used_in_box(row - row%3, col - col%3, num) && puzzle[row][col] == 0;
 }

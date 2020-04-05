@@ -7,7 +7,6 @@ extern "C" {
 
 #include "sudoku_palette.h"
 #include "pencil.h"
-#include "pencil_selected.h"
 
 #ifdef __cplusplus
 }

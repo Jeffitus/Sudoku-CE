@@ -21,9 +21,6 @@
 #include "gfx/gfx.h"
 #include "font/myfonts.h"
 
-extern uint24_t puzzle[9][9];
-extern uint8_t solution[9][9];
-
 void draw_three_boxes(uint8_t pos) {
     uint8_t i;
     uint8_t cell_size = (PLAYING_GRID_SIZE - 1) / 9;
@@ -54,14 +51,15 @@ bool draw_puzzle(void) {
             fontlib_SetCursorPosition(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + 6 + PUZZLE_Y);
             if (!(puzzle[i][j] & UNDEFINED)) {
                 fontlib_SetForegroundColor(BLACK);
-                fontlib_DrawUInt(puzzle[i][j], 1);
-            }
-            if (puzzle[i][j] & UNDEFINED && ((puzzle[i][j] & VALUE) != 0)) {
-                fontlib_SetForegroundColor(BLUE);
                 fontlib_DrawUInt(puzzle[i][j] & VALUE, 1);
             }
-            if (puzzle[i][j] == 128) {
-                puzzle_filled = false;
+            if (puzzle[i][j] & UNDEFINED) {
+                if ((puzzle[i][j] & VALUE) == 0) {
+                    puzzle_filled = false;
+                } else {
+                    fontlib_SetForegroundColor(BLUE);
+                    fontlib_DrawUInt(puzzle[i][j] & VALUE, 1);
+                }
             }
         }
     }
@@ -95,6 +93,9 @@ void draw_timer(uint24_t timer_count) {
 
     seconds = timer_count % 60;
 
+    gfx_SetColor(WHITE);
+    gfx_FillRectangle_NoClip(240, 2, 32, 54);
+
     fontlib_SetCursorPosition(240, 2);
     fontlib_DrawUInt(hours, 2);
     fontlib_DrawString(":");
@@ -105,15 +106,15 @@ void draw_timer(uint24_t timer_count) {
     fontlib_DrawUInt(seconds, 2);
 }
 
-void draw_string_special(char string[]) {
-    int i;
-    for (i = 0; i <= strlen(string); i++) {
-        if (string[i] == 'y') {
+void draw_string(char string[]) {
+    char *s;
+    for (s = string; *s; ++s) {
+        if (strchr("gpqy,", *s) != NULL) {
             fontlib_ShiftCursorPosition(0, 5);
-            fontlib_DrawGlyph('y');
+            fontlib_DrawGlyph(*s);
             fontlib_ShiftCursorPosition(0, -5);
         } else {
-            fontlib_DrawGlyph(string[i]);
+            fontlib_DrawGlyph(*s);
         }
     }
 }

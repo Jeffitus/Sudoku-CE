@@ -7,8 +7,10 @@
 #define UNDEFINED (1 << 23)
 #define PENCIL_MARKS (511 << 14)
 #define PENCIL_MARK(n) (1 << (13 + n))
+#define SOLUTION_DATA 240
+#define SOLUTION(n) ((n & SOLUTION_DATA) >> 4)
 /*For cases where want just the value or just the data*/
-#define DATA UNDEFINED & PENCIL_MARKS
+#define DATA (UNDEFINED & PENCIL_MARKS & SOLUTION_DATA)
 #define VALUE 15
 
 #define EASY 40
@@ -21,3 +23,5 @@
 #define WHITE 2
 
 #define ONE_SECOND 32768
+
+extern uint24_t puzzle[9][9];
