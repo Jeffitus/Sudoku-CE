@@ -333,12 +333,15 @@ void reveal_solution(void) {
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            puzzle[i][j] |= SOLUTION(puzzle[i][j] & SOLUTION_DATA);
+            if (puzzle[i][j] & UNDEFINED) {
+                puzzle[i][j] = SOLUTION(puzzle[i][j] & SOLUTION_DATA) | UNDEFINED;
+            }
         }
     }
 
     draw_grid();
     draw_puzzle();
+    gfx_BlitBuffer();
     wait_for_key_press();
     wait_for_key_release();
 }

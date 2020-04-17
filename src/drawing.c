@@ -64,7 +64,6 @@ bool draw_puzzle(void) {
         }
     }
 
-    gfx_BlitBuffer();
     return puzzle_filled;
 }
 
