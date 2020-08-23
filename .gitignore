@@ -1,3 +1,5 @@
 bin
 obj
+src/gfx/*.c
+src/gfx/*.h
 screenshots
