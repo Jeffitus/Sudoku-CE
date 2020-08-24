@@ -6,7 +6,7 @@
 # ----------------------------
 
 NAME        ?= SUDOKU
-COMPRESSED  ?= NO
+COMPRESSED  ?= YES
 ICON        ?= iconc.png
 DESCRIPTION ?= "Sudoku CE by Jeffitus"
 

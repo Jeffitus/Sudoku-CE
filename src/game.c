@@ -102,7 +102,7 @@ void game_loop(void) {
             draw_timer(timer_count);
             timer_IntAcknowledge = TIMER1_RELOADED;
         }
-        
+
         if (puzzle_filled) {
             win = win_check();
         }
@@ -119,7 +119,7 @@ void game_loop(void) {
         numpad = kb_Data[3] ^ kb_Data[4] ^ kb_Data[5];
 
         /* if new key or held long enough */
-        if (arrows && !prevkey | counter > 4) {
+        if (arrows && !prevkey | (counter > 4)) {
             if (right && selected_col < 8) {
                 selected_col++;
             }
@@ -255,8 +255,8 @@ bool win_check(void) {
     win = false;
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            result_y_temp |= 1 << (puzzle[i][j] & VALUE) - 1;
-            result_x_temp |= 1 << (puzzle[j][i] & VALUE) - 1;
+            result_y_temp |= 1 << ((puzzle[i][j] & VALUE) - 1);
+            result_x_temp |= 1 << ((puzzle[j][i] & VALUE) - 1);
         }
         if (result_y_temp == 511) {
             result_y |= 1 << i;
@@ -272,11 +272,11 @@ bool win_check(void) {
             for (j = 0; j < 3; j++) {
                 for (k = 0; k < 3; k++) {
                     for (l = 0; l < 3; l++) {
-                        result_boxes_temp |= 1 << (puzzle[3 * i + k][3 * j + l] & VALUE) - 1;
+                        result_boxes_temp |= 1 << ((puzzle[3 * i + k][3 * j + l] & VALUE) - 1);
                     }
                 }
                 if (result_boxes_temp == 511) {
-                    result_boxes |= 1 << 3 * i + j;
+                    result_boxes |= 1 << (3 * i + j);
                 }
             }
         }
