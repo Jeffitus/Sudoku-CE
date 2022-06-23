@@ -50,7 +50,7 @@ uint24_t puzzle[9][9] = {
 };
 /*uint24_t puzzle[9][9] = {0};*/
 
-void main(void) {
+int main(void) {
     srandom(rtc_Time());
     gfx_Begin();
     gfx_SetPalette(sudoku_palette, sizeof_sudoku_palette, 0);

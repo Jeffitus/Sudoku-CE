@@ -1,0 +1,5 @@
+sudoku_palette.h
+sudoku_palette.c
+pencil.h
+pencil.c
+gfx.h

@@ -22,8 +22,6 @@
 #include "font/myfonts.h"
 
 void game_loop(void) {
-    uint8_t i;
-    uint8_t j;
 
     uint8_t selected_row;
     uint8_t selected_col;
@@ -182,7 +180,7 @@ void game_loop(void) {
                     puzzle[selected_row][selected_col] ^= PENCIL_MARK(num);
                 }
             } else {
-                puzzle[selected_row][selected_col] = puzzle[selected_row][selected_col] & ~VALUE | num;
+                puzzle[selected_row][selected_col] = (puzzle[selected_row][selected_col] & ~VALUE) | num;
                 dbg_sprintf(dbgout, "%d\n", puzzle[selected_row][selected_col] & VALUE);
             }
         }
@@ -214,7 +212,7 @@ void game_loop(void) {
         if (!prevkey) {
             counter = 0;
         }
-        prevkey = arrows | numpad | kb_Data[1] & kb_Graph | kb_Data[6] & kb_Clear;
+        prevkey = arrows | numpad | (kb_Data[1] & kb_Graph) | (kb_Data[6] & kb_Clear);
 
         counter++;
 
@@ -318,8 +316,6 @@ void generate_puzzle(uint8_t difficulty) {
 }
 
 void setup_timer(void) {
-    int count;
-
     timer_Control = TIMER1_DISABLE;
 
     timer_1_ReloadValue = timer_1_Counter = ONE_SECOND;

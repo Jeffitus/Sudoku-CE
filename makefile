@@ -7,12 +7,14 @@
 
 NAME        ?= SUDOKU
 COMPRESSED  ?= YES
+COMPRESSED_MODE ?= zx0
 ICON        ?= iconc.png
 DESCRIPTION ?= "Sudoku CE by Jeffitus"
+ARCHIVED	?= YES
 
 # ----------------------------
 
-include $(CEDEV)/include/.makefile
+include $(CEDEV)/meta/makefile.mk
 
 $(OBJDIR)/myfonts.src: $(SRCDIR)/font/calvetica.inc
 

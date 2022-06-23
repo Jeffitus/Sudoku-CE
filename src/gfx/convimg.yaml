@@ -1,15 +1,21 @@
-output: c
-  include-file: gfx.h
-  palettes:
-    - sudoku_palette
-  converts:
-    - sprites
+outputs:
+  - type: c
+    include-file: gfx.h
+    palettes:
+      - sudoku_palette
+    converts:
+      - sprites
 
-palette: sudoku_palette
-  images:
-    - pencil_selected.png
+palettes: 
+  - name: sudoku_palette
+    fixed-entries:
+      - color: {index: 0, r: 16, g: 85, b: 165}
+      - color: {index: 2, r: 255, g: 255, b: 255}
+      - color: {index: 1, r: 0, g: 0, b: 0}
 
-convert: sprites
-  palette: sudoku_palette
-  images:
-    - pencil.png
+
+converts: 
+  - name: sprites
+    palette: sudoku_palette
+    images:
+      - pencil.png
