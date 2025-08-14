@@ -12,11 +12,17 @@ ICON        ?= iconc.png
 DESCRIPTION ?= "Sudoku CE by Jeffitus"
 ARCHIVED	?= YES
 
+CFLAGS = -Wall -Wextra -Oz
+CXXFLAGS = -Wall -Wextra -Oz
+
 # ----------------------------
 
-include $(CEDEV)/meta/makefile.mk
+include $(shell cedev-config --makefile)
 
-$(OBJDIR)/myfonts.src: $(SRCDIR)/font/calvetica.inc
+FONTDIR ?= ce-fonts/calvetica
+FONTNAME ?= Calvetic
 
-$(SRCDIR)/font/calvetica.inc: $(SRCDIR)/font/HELVE29.fnt
-	convfont -o carray -f $(SRCDIR)/font/HELVE29.fnt $(SRCDIR)/font/calvetica.inc
+font:
+	$(MAKE) -C $(FONTDIR) CALCNAME=$(FONTNAME)
+	mv $(FONTDIR)/$(FONTNAME).bin $(BINDIR)/$(FONTNAME).bin
+	mv $(FONTDIR)/$(FONTNAME).8xv $(BINDIR)/$(FONTNAME).8xv

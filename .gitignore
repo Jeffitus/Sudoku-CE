@@ -2,4 +2,7 @@ bin
 obj
 src/gfx/*.c
 src/gfx/*.h
+src/gfx/convimg.yaml.lst
 screenshots
+
+.vscode
