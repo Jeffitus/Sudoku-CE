@@ -1,0 +1,3 @@
+[submodule "ce-fonts"]
+	path = ce-fonts
+	url = https://github.com/drdnar/ce-fonts
