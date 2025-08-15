@@ -92,7 +92,7 @@ void draw_timer(uint24_t timer_count) {
     seconds = timer_count % 60;
 
     gfx_SetColor(WHITE);
-    gfx_FillRectangle_NoClip(240, 2, 32, 54);
+    gfx_FillRectangle_NoClip(240, 5, 32, 54);
 
     fontlib_SetCursorPosition(240, 0);
     fontlib_DrawUInt(hours, 2);
