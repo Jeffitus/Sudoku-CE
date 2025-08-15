@@ -19,7 +19,6 @@
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
-#include "font/myfonts.h"
 
 uint8_t basic_menu(char title[], char *options[], uint8_t quit_option) {
     uint8_t i;
@@ -38,8 +37,8 @@ uint8_t basic_menu(char title[], char *options[], uint8_t quit_option) {
 
         center = center_cursor_x(title);
 
-        fontlib_SetCursorPosition(center, 10);
-        draw_string(title);
+        fontlib_SetCursorPosition(center, 4);
+        fontlib_DrawString(title);
 
         gfx_HorizLine_NoClip(center, 33, fontlib_GetStringWidth(title));
 
@@ -50,13 +49,13 @@ uint8_t basic_menu(char title[], char *options[], uint8_t quit_option) {
         gfx_FillCircle_NoClip(center + fontlib_GetStringWidth(options[selected]), selected * 30 + 50, 13);
 
         for (i = 0; i < quit_option + 1; i++) {
-            fontlib_SetCursorPosition(center_cursor_x(options[i]), i * 30 + 40);
+            fontlib_SetCursorPosition(center_cursor_x(options[i]), i * 30 + 35);
             if (i == selected) {
                 fontlib_SetForegroundColor(WHITE);
-                draw_string(options[i]);
+                fontlib_DrawString(options[i]);
             } else {
                 fontlib_SetForegroundColor(BLACK);
-                draw_string(options[i]);
+                fontlib_DrawString(options[i]);
             }
         }
 
@@ -121,8 +120,8 @@ void main_menu(void) {
                     break;
                 } else {
                     gfx_FillScreen(WHITE);
-                    fontlib_SetCursorPosition(center_cursor_x(generate_message), 10);
-                    draw_string(generate_message);
+                    fontlib_SetCursorPosition(center_cursor_x(generate_message), 8);
+                    fontlib_DrawString(generate_message);
                     gfx_BlitBuffer();
                     /* Reset puzzle to zeroes */
                     for (i = 0; i < 9; i++) {
@@ -149,26 +148,26 @@ void main_menu(void) {
 void about_screen(void) {
     gfx_FillScreen(WHITE);
     fontlib_SetForegroundColor(BLACK);
-    fontlib_SetCursorPosition(10, 10);
-    draw_string("Sudoku CE was made by");
-    fontlib_SetCursorPosition(10, 33);
-    draw_string("Jeffitus, with some help");
-    fontlib_SetCursorPosition(10, 56);
-    draw_string("from MateoConLechuga and");
-    fontlib_SetCursorPosition(10, 79);
+    fontlib_SetCursorPosition(10, 8);
+    fontlib_DrawString("Sudoku CE was made by");
+    fontlib_SetCursorPosition(10, 31);
+    fontlib_DrawString("Jeffitus, with some help");
+    fontlib_SetCursorPosition(10, 54);
+    fontlib_DrawString("from MateoConLechuga and");
+    fontlib_SetCursorPosition(10, 77);
     /* sorry jacobly the 'j' looked too bad with the modified font */
-    draw_string("Jacobly.");
-    fontlib_SetCursorPosition(10, 102);
-    draw_string("Use the arrow keys and");
-    fontlib_SetCursorPosition(10, 125);
-    draw_string("numpad to fill in the grid,");
-    fontlib_SetCursorPosition(10, 148);
-    draw_string("[graph] to toggle pencil");
-    fontlib_SetCursorPosition(10, 171);
-    draw_string("mode, and [clear] to quit.");
+    fontlib_DrawString("jacobly.");
+    fontlib_SetCursorPosition(10, 100);
+    fontlib_DrawString("Use the arrow keys and");
+    fontlib_SetCursorPosition(10, 123);
+    fontlib_DrawString("numpad to fill in the grid,");
+    fontlib_SetCursorPosition(10, 146);
+    fontlib_DrawString("[graph] to toggle pencil");
+    fontlib_SetCursorPosition(10, 169);
+    fontlib_DrawString("mode, and [clear] to quit.");
     fontlib_SetForegroundColor(BLUE);
-    fontlib_SetCursorPosition(10, 213);
-    draw_string("https://ceme.tech/t16261");
+    fontlib_SetCursorPosition(10, 211);
+    fontlib_DrawString("https://ceme.tech/t16261");
     gfx_BlitBuffer();
     wait_for_key_press();
     wait_for_key_release();

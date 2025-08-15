@@ -19,7 +19,6 @@
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
-#include "font/myfonts.h"
 
 void game_loop(void) {
 
@@ -220,10 +219,10 @@ void game_loop(void) {
     } while (!quit && !win);
     if (win) {
         fontlib_SetForegroundColor(BLACK);
-        fontlib_SetCursorPosition(255, 101);
-        draw_string("You");
-        fontlib_SetCursorPosition(254, 119);
-        draw_string("Win!");
+        fontlib_SetCursorPosition(255, 99);
+        fontlib_DrawString("You");
+        fontlib_SetCursorPosition(254, 117);
+        fontlib_DrawString("Win!");
         gfx_BlitBuffer();
         wait_for_key_release();
         wait_for_key_press();

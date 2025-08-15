@@ -19,7 +19,6 @@
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
-#include "font/myfonts.h"
 
 void swap(uint8_t *a, uint8_t *b) {
     uint8_t temp;

@@ -28,7 +28,6 @@
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
-#include "font/myfonts.h"
 
 /*
 for each element of puzzle array:
@@ -51,10 +50,15 @@ uint24_t puzzle[9][9] = {
 /*uint24_t puzzle[9][9] = {0};*/
 
 int main(void) {
+    char *font_pack_name = "Calvetic";
+    fontlib_font_t *calvetica;
+
     srandom(rtc_Time());
     gfx_Begin();
     gfx_SetPalette(sudoku_palette, sizeof_sudoku_palette, 0);
     gfx_SetTransparentColor(WHITE);
+    // TODO: proper check for this. Also fallback for using graphx if font isn't found
+    calvetica = fontlib_GetFontByIndex(font_pack_name, 4);
     fontlib_SetFont(calvetica, 0);
     fontlib_SetTransparency(true);
     gfx_SetDrawBuffer();

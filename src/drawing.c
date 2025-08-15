@@ -19,7 +19,6 @@
 #include "game.h"
 #include "solve.h"
 #include "gfx/gfx.h"
-#include "font/myfonts.h"
 
 void draw_three_boxes(uint8_t pos) {
     uint8_t i;
@@ -48,7 +47,7 @@ bool draw_puzzle(void) {
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            fontlib_SetCursorPosition(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + 6 + PUZZLE_Y);
+            fontlib_SetCursorPosition(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + PUZZLE_Y - 1);
             if (!(puzzle[i][j] & UNDEFINED)) {
                 fontlib_SetForegroundColor(BLACK);
                 fontlib_DrawUInt(puzzle[i][j] & VALUE, 1);
@@ -95,25 +94,12 @@ void draw_timer(uint24_t timer_count) {
     gfx_SetColor(WHITE);
     gfx_FillRectangle_NoClip(240, 2, 32, 54);
 
-    fontlib_SetCursorPosition(240, 2);
+    fontlib_SetCursorPosition(240, 0);
     fontlib_DrawUInt(hours, 2);
     fontlib_DrawString(":");
-    fontlib_SetCursorPosition(240, 20);
+    fontlib_SetCursorPosition(240, 18);
     fontlib_DrawUInt(minutes, 2);
     fontlib_DrawString(":");
-    fontlib_SetCursorPosition(240, 38);
+    fontlib_SetCursorPosition(240, 36);
     fontlib_DrawUInt(seconds, 2);
-}
-
-void draw_string(char string[]) {
-    char *s;
-    for (s = string; *s; ++s) {
-        if (strchr("gpqy,", *s) != NULL) {
-            fontlib_ShiftCursorPosition(0, 5);
-            fontlib_DrawGlyph(*s);
-            fontlib_ShiftCursorPosition(0, -5);
-        } else {
-            fontlib_DrawGlyph(*s);
-        }
-    }
 }
