@@ -72,7 +72,7 @@ int main(void) {
         gfx_SetTextScale(2, 2);
         draw_string = &gfx_PrintString;
         draw_uint = &gfx_PrintUInt;
-        set_cursor = (void (*)(uint24_t, uint8_t)) &gfx_SetTextXY;
+        set_cursor = &set_cursor_gfx;
         set_color = (void (*)) &gfx_SetTextFGColor;
         get_string_width = &gfx_GetStringWidth;
     }

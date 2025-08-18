@@ -94,15 +94,15 @@ void draw_timer(uint24_t timer_count) {
     seconds = timer_count % 60;
 
     gfx_SetColor(WHITE);
-    gfx_FillRectangle_NoClip(240, 5, 32, 54);
+    gfx_FillRectangle_NoClip(242, 5, 32, 54);
 
-    set_cursor(240, 0);
+    set_cursor(242, 0);
     draw_uint(hours, 2);
     draw_string(":");
-    set_cursor(240, 18);
+    set_cursor(242, 18);
     draw_uint(minutes, 2);
     draw_string(":");
-    set_cursor(240, 36);
+    set_cursor(242, 36);
     draw_uint(seconds, 2);
 }
 
@@ -116,3 +116,7 @@ void (*set_cursor)(uint24_t, uint8_t);
 void (*set_color)(uint8_t);
 
 uint24_t (*get_string_width)(const char *);
+
+void set_cursor_gfx(uint24_t x, uint8_t y) {
+    gfx_SetTextXY(x, y + 8);
+}
