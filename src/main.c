@@ -47,6 +47,7 @@ uint24_t puzzle[9][9] = {
     {1,5,4,7,9,6,8,2,3},
     {2,3,9,8,4,1,5,6,7}
 };
+bool use_font;
 /*uint24_t puzzle[9][9] = {0};*/
 
 int main(void) {
@@ -57,10 +58,24 @@ int main(void) {
     gfx_Begin();
     gfx_SetPalette(sudoku_palette, sizeof_sudoku_palette, 0);
     gfx_SetTransparentColor(WHITE);
-    // TODO: proper check for this. Also fallback for using graphx if font isn't found
     calvetica = fontlib_GetFontByIndex(font_pack_name, 4);
-    fontlib_SetFont(calvetica, 0);
-    fontlib_SetTransparency(true);
+    use_font = (bool) calvetica;
+    if (calvetica != NULL) {
+        fontlib_SetFont(calvetica, 0);
+        fontlib_SetTransparency(true);
+        draw_string = (void (*)) &fontlib_DrawString;
+        draw_uint = &fontlib_DrawUInt;
+        set_cursor = &fontlib_SetCursorPosition;
+        set_color = &fontlib_SetForegroundColor;
+        get_string_width = &fontlib_GetStringWidth;
+    } else {
+        gfx_SetTextScale(2, 2);
+        draw_string = &gfx_PrintString;
+        draw_uint = &gfx_PrintUInt;
+        set_cursor = (void (*)(uint24_t, uint8_t)) &gfx_SetTextXY;
+        set_color = (void (*)) &gfx_SetTextFGColor;
+        get_string_width = &gfx_GetStringWidth;
+    }
     gfx_SetDrawBuffer();
     main_menu();
     gfx_End();

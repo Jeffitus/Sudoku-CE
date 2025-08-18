@@ -3,3 +3,8 @@ void draw_grid(void);
 bool draw_puzzle(void);
 void draw_pencils(uint8_t row, uint8_t col);
 void draw_timer(uint24_t timer_count);
+// void (*draw_string)(char *);
+// void (*set_cursor)(uint24_t, uint8_t);
+// void (*set_color)(uint8_t);
+// uint24_t (*get_string_width)(char *);
+// void (*draw_uint)(unsigned int, uint8_t);

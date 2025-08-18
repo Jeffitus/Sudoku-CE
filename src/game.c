@@ -62,7 +62,7 @@ void game_loop(void) {
     win = false;
     quit = false;
 
-    fontlib_SetForegroundColor(BLACK);
+    set_color(BLACK);
 
     draw_grid();
     setup_timer();
@@ -218,11 +218,11 @@ void game_loop(void) {
         gfx_BlitBuffer();
     } while (!quit && !win);
     if (win) {
-        fontlib_SetForegroundColor(BLACK);
-        fontlib_SetCursorPosition(255, 99);
-        fontlib_DrawString("You");
-        fontlib_SetCursorPosition(254, 117);
-        fontlib_DrawString("Win!");
+        set_color(BLACK);
+        set_cursor(255, 99);
+        draw_string("You");
+        set_cursor(254, 117);
+        draw_string("Win!");
         gfx_BlitBuffer();
         wait_for_key_release();
         wait_for_key_press();

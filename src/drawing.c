@@ -47,17 +47,17 @@ bool draw_puzzle(void) {
 
     for (i = 0; i < 9; i++) {
         for (j = 0; j < 9; j++) {
-            fontlib_SetCursorPosition(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + PUZZLE_Y - 1);
+            set_cursor(j * PLAYING_GRID_SIZE / 9 + j / 3 + 6 + PUZZLE_X, i * PLAYING_GRID_SIZE / 9 + i / 3 + PUZZLE_Y - 1);
             if (!(puzzle[i][j] & UNDEFINED)) {
-                fontlib_SetForegroundColor(BLACK);
-                fontlib_DrawUInt(puzzle[i][j] & VALUE, 1);
+                set_color(BLACK);
+                draw_uint(puzzle[i][j] & VALUE, 1);
             }
             if (puzzle[i][j] & UNDEFINED) {
                 if ((puzzle[i][j] & VALUE) == 0) {
                     puzzle_filled = false;
                 } else {
-                    fontlib_SetForegroundColor(BLUE);
-                    fontlib_DrawUInt(puzzle[i][j] & VALUE, 1);
+                    set_color(BLUE);
+                    draw_uint(puzzle[i][j] & VALUE, 1);
                 }
             }
         }
@@ -70,6 +70,7 @@ void draw_pencils(uint8_t row, uint8_t col) {
     uint8_t i;
     uint8_t j;
     gfx_SetTextFGColor(BLUE);
+    gfx_SetTextScale(1, 1);
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             if (puzzle[row][col] & PENCIL_MARK(3 * i + j + 1)) {
@@ -78,6 +79,7 @@ void draw_pencils(uint8_t row, uint8_t col) {
             }
         }
     }
+    gfx_SetTextScale(2, 2);
 }
 
 void draw_timer(uint24_t timer_count) {
@@ -94,12 +96,23 @@ void draw_timer(uint24_t timer_count) {
     gfx_SetColor(WHITE);
     gfx_FillRectangle_NoClip(240, 5, 32, 54);
 
-    fontlib_SetCursorPosition(240, 0);
-    fontlib_DrawUInt(hours, 2);
-    fontlib_DrawString(":");
-    fontlib_SetCursorPosition(240, 18);
-    fontlib_DrawUInt(minutes, 2);
-    fontlib_DrawString(":");
-    fontlib_SetCursorPosition(240, 36);
-    fontlib_DrawUInt(seconds, 2);
+    set_cursor(240, 0);
+    draw_uint(hours, 2);
+    draw_string(":");
+    set_cursor(240, 18);
+    draw_uint(minutes, 2);
+    draw_string(":");
+    set_cursor(240, 36);
+    draw_uint(seconds, 2);
 }
+
+/* a series of function pointers that will be set based on whether we have the right font */
+void (*draw_string)(const char *);
+
+void (*draw_uint)(unsigned int, uint8_t);
+
+void (*set_cursor)(uint24_t, uint8_t);
+
+void (*set_color)(uint8_t);
+
+uint24_t (*get_string_width)(const char *);

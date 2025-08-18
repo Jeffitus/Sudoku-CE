@@ -25,3 +25,14 @@
 #define ONE_SECOND 32768
 
 extern uint24_t puzzle[9][9];
+extern bool use_font;
+
+extern void (*draw_string)(const char *);
+
+extern void (*draw_uint)(unsigned int, uint8_t);
+
+extern void (*set_cursor)(uint24_t, uint8_t);
+
+extern void (*set_color)(uint8_t);
+
+extern uint24_t (*get_string_width)(const char *);
