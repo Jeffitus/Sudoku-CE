@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <graphx.h>
+#include <fileioc.h>
 #include <fontlibc.h>
 #include <keypadc.h>
 #include <debug.h>
@@ -52,11 +53,10 @@ uint8_t basic_menu(char title[], char *options[], uint8_t quit_option) {
             set_cursor(center_cursor_x(options[i]), i * 30 + 35);
             if (i == selected) {
                 set_color(WHITE);
-                draw_string(options[i]);
             } else {
                 set_color(BLACK);
-                draw_string(options[i]);
             }
+            draw_string(options[i]);
         }
 
         kb_Scan();
@@ -94,6 +94,102 @@ uint8_t basic_menu(char title[], char *options[], uint8_t quit_option) {
     return selected;
 }
 
+uint8_t scroll_menu(char title[], char *options[], uint8_t num_options) {
+    uint8_t selected;
+    bool quit_highlighted;
+    uint24_t center;
+    uint24_t width;
+    bool prevkey;
+
+    char *back = "Back";
+    char *cur_string;
+
+    selected = 0;
+    prevkey = false;
+    quit_highlighted = false;
+
+    do {
+        if (quit_highlighted) {
+            cur_string = back;
+        } else {
+            cur_string = options[selected];
+        }
+        gfx_FillScreen(WHITE);
+        gfx_SetColor(BLACK);
+
+        set_color(BLACK);
+
+        center = center_cursor_x(title);
+
+        set_cursor(center, 4);
+        draw_string(title);
+
+        gfx_HorizLine_NoClip(center, 33, get_string_width(title));
+
+        gfx_SetColor(BLUE);
+        center = center_cursor_x(cur_string);
+        width = get_string_width(cur_string);
+        gfx_FillCircle_NoClip(center, quit_highlighted * 30 + 50, 13);
+        gfx_FillRectangle_NoClip(center, quit_highlighted * 30 + 37, width, 27);
+        gfx_FillCircle_NoClip(center + width, quit_highlighted * 30 + 50, 13);
+
+        set_cursor(center_cursor_x(options[selected]), 35);
+        if (quit_highlighted) {
+            set_color(BLACK);
+        } else {
+            set_color(WHITE);
+        }
+        draw_string(options[selected]);
+
+        set_cursor(center_cursor_x(back), 75);
+        if (quit_highlighted) {
+            set_color(WHITE);
+        } else {
+            set_color(BLACK);
+        }
+        draw_string(back);
+
+        kb_Scan();
+
+        if (kb_Data[7] && !prevkey) {
+            switch (kb_Data[7]) {
+                case kb_Up:
+                case kb_Down:
+                    quit_highlighted = !quit_highlighted;
+                    break;
+                case kb_Left:
+                    if (selected == 0) {
+                        selected = num_options - 1;
+                    } else {
+                        selected--;
+                    }
+                    break;
+                case kb_Right:
+                    if (selected == num_options - 1) {
+                        selected = 0;
+                    } else {
+                        selected++;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (kb_Data[6] & kb_Clear) {
+            selected = 0;
+        }
+
+        prevkey = kb_Data[7];
+
+        gfx_BlitBuffer();
+    } while (!(kb_Data[6] & kb_Clear || kb_Data[1] & kb_2nd));
+    while (kb_Data[6] & kb_Clear || kb_Data[1] & kb_2nd) {
+        kb_Scan();
+    }
+    return selected;
+}
+
 uint24_t center_cursor_x(char string[]) {
     return 160 - get_string_width(string) / 2;
 }
@@ -103,7 +199,8 @@ void main_menu(void) {
     uint8_t j;
     char title[] = "Sudoku CE";
     char *options[] = {
-        "Play",
+        "Random Puzzle",
+        "Select Pack",
         "About",
         "Quit"
     };
@@ -113,7 +210,7 @@ void main_menu(void) {
     quit = false;
 
     do {
-        switch (basic_menu(title, options, 2)) {
+        switch (basic_menu(title, options, 3)) {
             case 0:
                 difficulty = difficulty_select();
                 if (!difficulty) {
@@ -130,15 +227,22 @@ void main_menu(void) {
                         }
                     }
                     generate_puzzle(difficulty);
+
                     game_loop();
                     break;
                 }
                 game_loop();
                 break;
             case 1:
-                about_screen();
+                
+                pack_select();
+
+                game_loop();
                 break;
             case 2:
+                about_screen();
+                break;
+            case 3:
                 quit = true;
                 break;
         }
@@ -203,6 +307,147 @@ uint8_t difficulty_select(void) {
             break;
     }
     return difficulty;
+}
+
+void pack_select(void) {
+    char title[] = "Select a Level Pack";
+
+    uint8_t num_packs = 0;
+    
+    char *cur_pack_name;
+    char **pack_names = malloc(256 * sizeof(char*));
+
+    void *vat_ptr = NULL;
+
+    while ((cur_pack_name = ti_Detect(&vat_ptr, PACK_HEADER))) {
+        // dbg_sprintf(dbgout, "%s\n", cur_pack_name);
+        num_packs++;
+        pack_names[num_packs - 1] = malloc((strlen(cur_pack_name) + 1) * sizeof(char));
+        strcpy(pack_names[num_packs - 1], cur_pack_name);
+        // dbg_sprintf(dbgout, "\nall packs at this point:\n");
+        // for (uint8_t i = 0; i < num_packs; i++) {
+        //     dbg_sprintf(dbgout, "%s\n", pack_names[i]);
+        // }
+        // dbg_sprintf(dbgout, "\n");
+    }
+
+    // did that work?
+    // dbg_sprintf(dbgout, "all packs at this point:\n");
+    // for (uint8_t i = 0; i < num_packs; i++) {
+    //     dbg_sprintf(dbgout, "%s\n", pack_names[i]);
+    // }
+
+    char *selected_pack;
+    uint8_t selected = scroll_menu(title, pack_names, num_packs);
+
+    selected_pack = pack_names[selected];
+
+    level_select(selected_pack);
+}
+
+void level_select(char *pack_name) {
+    uint8_t handle = ti_Open(pack_name, "r");
+    // ti_Seek(7, SEEK_SET, handle);
+    uint24_t size = ti_GetSize(handle);
+    uint24_t level_count = (size - LEVEL_OFFSET) / LEVEL_SIZE;
+    dbg_sprintf(dbgout, "Pack selected: %s\n", pack_name);
+    dbg_sprintf(dbgout, "pack size: %d\n", size);
+    dbg_sprintf(dbgout, "number of levels: %d\n", level_count);
+
+    uint8_t cursor_row = 0;
+    uint8_t cursor_col = 0;
+    bool prevkey;
+    uint24_t center;
+    const char *title = "Select a Level:";
+    do {
+        gfx_FillScreen(WHITE);
+        gfx_SetColor(BLACK);
+
+        set_color(BLACK);
+
+        center = center_cursor_x(title);
+
+        set_cursor(center, 4);
+        draw_string(title);
+
+        gfx_HorizLine_NoClip(center, 33, get_string_width(title));
+
+        gfx_SetTextScale(1, 1);
+
+        uint8_t row = 0, col = 0;
+        for (uint8_t i = 0; i < level_count; i++) {
+            // dbg_sprintf(dbgout, "current level: %d\n", i);
+            gfx_SetTextXY(12 + 30 * col, 42 + 15 * row);
+            gfx_PrintUInt(i + 1, 3);
+            col++;
+            if (col == 10) {
+                col = 0;
+                row++;
+            }
+        }
+        gfx_SetTextScale(2, 2);
+
+        gfx_Rectangle_NoClip(10 + 30 * cursor_col, 40 + 15 * cursor_row, 27, 11);
+
+        set_cursor(12, 210);
+        draw_string("Difficulty:");
+
+        kb_Scan();
+
+        if (kb_Data[7]) {
+            switch (kb_Data[7]) {
+                case kb_Up:
+                    if (cursor_row == 0) {
+                        cursor_row = 9;
+                    } else {
+                        cursor_row--;
+                    }
+                    break;
+                case kb_Down:
+                    if (cursor_row == 9) {
+                        cursor_row = 0;
+                    } else {
+                        cursor_row++;
+                    }
+                    break;
+                case kb_Right:
+                    if (cursor_col == 9) {
+                        cursor_col = 0;
+                        if (cursor_row == 9) {
+                            cursor_row = 0;
+                        } else {
+                            cursor_row++;
+                        }
+                    } else {
+                        cursor_col++;
+                    }
+                    break;
+                case kb_Left:
+                    if (cursor_col == 0) {
+                        cursor_col = 9;
+                        if (cursor_row == 0) {
+                            cursor_row = 9;
+                        } else {
+                            cursor_row--;
+                        }
+                    } else {
+                        cursor_col--;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        // are we at a position greater than the actual level count?
+        if (10 * cursor_row + cursor_col >= level_count) {
+            cursor_row = 0;
+            cursor_col = 0;
+        }
+
+        prevkey = kb_Data[7];
+
+        gfx_BlitBuffer();
+    } while (!(kb_Data[6] & kb_Clear || kb_Data[1] & kb_2nd));
 }
 
 void wait_for_key_press(void) {

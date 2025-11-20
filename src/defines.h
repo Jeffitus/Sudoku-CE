@@ -9,7 +9,7 @@
 #define PENCIL_MARK(n) (1 << (13 + n))
 #define SOLUTION_DATA 240
 #define SOLUTION(n) ((n & SOLUTION_DATA) >> 4)
-/*For cases where want just the value or just the data*/
+// For cases where want just the value or just the data
 #define DATA (UNDEFINED & PENCIL_MARKS & SOLUTION_DATA)
 #define VALUE 15
 
@@ -23,6 +23,11 @@
 #define WHITE 2
 
 #define ONE_SECOND 32768
+
+#define PACK_HEADER "Sudoku"
+#define LEVEL_OFFSET 5
+// 81 digits + 1 difficulty byte
+#define LEVEL_SIZE 82
 
 extern uint24_t puzzle[9][9];
 extern bool use_font;
