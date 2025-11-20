@@ -320,22 +320,10 @@ void pack_select(void) {
     void *vat_ptr = NULL;
 
     while ((cur_pack_name = ti_Detect(&vat_ptr, PACK_HEADER))) {
-        // dbg_sprintf(dbgout, "%s\n", cur_pack_name);
         num_packs++;
         pack_names[num_packs - 1] = malloc((strlen(cur_pack_name) + 1) * sizeof(char));
         strcpy(pack_names[num_packs - 1], cur_pack_name);
-        // dbg_sprintf(dbgout, "\nall packs at this point:\n");
-        // for (uint8_t i = 0; i < num_packs; i++) {
-        //     dbg_sprintf(dbgout, "%s\n", pack_names[i]);
-        // }
-        // dbg_sprintf(dbgout, "\n");
     }
-
-    // did that work?
-    // dbg_sprintf(dbgout, "all packs at this point:\n");
-    // for (uint8_t i = 0; i < num_packs; i++) {
-    //     dbg_sprintf(dbgout, "%s\n", pack_names[i]);
-    // }
 
     char *selected_pack;
     uint8_t selected = scroll_menu(title, pack_names, num_packs);
@@ -347,12 +335,8 @@ void pack_select(void) {
 
 void level_select(char *pack_name) {
     uint8_t handle = ti_Open(pack_name, "r");
-    // ti_Seek(7, SEEK_SET, handle);
     uint24_t size = ti_GetSize(handle);
     uint24_t level_count = (size - LEVEL_OFFSET) / LEVEL_SIZE;
-    dbg_sprintf(dbgout, "Pack selected: %s\n", pack_name);
-    dbg_sprintf(dbgout, "pack size: %d\n", size);
-    dbg_sprintf(dbgout, "number of levels: %d\n", level_count);
 
     uint8_t cursor_row = 0;
     uint8_t cursor_col = 0;
@@ -376,7 +360,6 @@ void level_select(char *pack_name) {
 
         uint8_t row = 0, col = 0;
         for (uint8_t i = 0; i < level_count; i++) {
-            // dbg_sprintf(dbgout, "current level: %d\n", i);
             gfx_SetTextXY(12 + 30 * col, 42 + 15 * row);
             gfx_PrintUInt(i + 1, 3);
             col++;
